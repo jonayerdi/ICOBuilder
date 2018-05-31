@@ -1,0 +1,31 @@
+﻿<Window x:Class="ICOBuilder.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ICOBuilder"
+        mc:Ignorable="d"
+        Title="ICOBuilder" Height="400" Width="400">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid x:Name="GridImageList" Grid.Column="0" Grid.Row="0">
+            <TreeView x:Name="TVImageList"></TreeView>
+        </Grid>
+        <Grid x:Name="GridImageView" Grid.Column="1" Grid.Row="0">
+            <Image x:Name="ImageView"></Image>
+        </Grid>
+        <Grid x:Name="GridImageOptions" Grid.Column="0" Grid.Row="1">
+
+        </Grid>
+        <Grid x:Name="GridICOOptions" Grid.Column="1" Grid.Row="1">
+            
+        </Grid>
+    </Grid>
+</Window>
