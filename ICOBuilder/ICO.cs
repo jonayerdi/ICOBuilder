@@ -74,15 +74,26 @@ namespace ICOBuilder
     }
     public class ICOFile
     {
+        private static readonly int ICONDIR_SIZE = 6;
+        private static readonly int ICONDIRENTRY_SIZE = 16;
+
         public ICOType Type { get; set; }
         public List<ICOImage> Images { get; set; }
 
         private int OffsetOfImage(ICOImage img)
         {
-            //TODO
-            return 0;
+            int headersSize = ICONDIR_SIZE + (ICONDIRENTRY_SIZE * Images.Count);
+            int imagesOffset = 0;
+            for(int i = 0; i < Images.Count; i++)
+            {
+                if (Images[i] == img)
+                    break;
+                imagesOffset += Images[i].Serialized.Length;
+            }
+            return headersSize + imagesOffset;
         }
 
+        // ICO file header : 6 bytes
         private byte[] SerializeICONDIR()
         {
             List<byte> ICONDIR = new List<byte>();
@@ -105,10 +116,11 @@ namespace ICOBuilder
             return ICONDIR.ToArray();
         }
 
+        // Entry per image on the ICO file : 16 bytes
         private byte[] SerializeICONDIRENTRY(ICOImage img)
         {
-            // Width of the image in pixels, 0 means 256 pixels : 1 byte
             List<byte> ICONDIRENTRY = new List<byte>();
+            // Width of the image in pixels, 0 means 256 pixels : 1 byte
             if (img.Width < 256)
                 ICONDIRENTRY.AddRange(Bytes.FromInt(img.Width, 1));
             else if (img.Width == 256)
