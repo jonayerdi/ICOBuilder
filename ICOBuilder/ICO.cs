@@ -18,6 +18,8 @@ namespace ICOBuilder
     }
     public class ICOImage
     {
+        public static readonly int BITMAPFILEHEADER_SIZE = 14;
+
         public Image Image { get; set; }
         public string Path { get; set; }
         public ICOImageType Type { get; set; }
@@ -26,7 +28,8 @@ namespace ICOBuilder
         public int Height { get { return Image.Height; } }
         public Size Size { get { return Image.Size; } set { Image = new Bitmap(Image, value); } }
 
-        public int BitsPerPixel { get { return 0; } } //TODO
+        // Do we need this?
+        public int BitsPerPixel { get { return 0; } }
 
         // These two are only for CUR files
         public int HotspotX { get; set; }
@@ -45,10 +48,7 @@ namespace ICOBuilder
         {
             this.Path = path;
             this.Image = Image.FromFile(path);
-            if(this.Image.RawFormat == ImageFormat.Bmp)
-                this.Type = ICOImageType.BMP;
-            else
-                this.Type = ICOImageType.PNG;
+            this.Type = ICOImageType.PNG;
             this.HotspotX = 0;
             this.HotspotY = 0;
         }
@@ -70,6 +70,9 @@ namespace ICOBuilder
             }
             Image.Save(stream, format);
             serialized = stream.ToArray();
+            // For BMP images, strip BITMAPFILEHEADER
+            if (Type == ICOImageType.BMP)
+                serialized = Bytes.Subset(serialized, BITMAPFILEHEADER_SIZE, serialized.Length - BITMAPFILEHEADER_SIZE);
         }
     }
     public class ICOFile
@@ -190,6 +193,20 @@ namespace ICOBuilder
             byte[] result = new byte[byteCount];
             for (int i = 0; i < byteCount; i++)
                 result[i] = (byte)(num >> (8 * i));
+            return result;
+        }
+        public static int FromBytes(byte[] bytes, int start, int count)
+        {
+            int result = 0;
+            for (int i = 0; i < count; i++)
+                result += ((int)bytes[start + i]) << (8 * i);
+            return result;
+        }
+        public static byte[] Subset(byte[] bytes, int start, int count)
+        {
+            byte[] result = new byte[count];
+            for (int i = 0; i < count; i++)
+                result[i] = bytes[start + i];
             return result;
         }
     }
