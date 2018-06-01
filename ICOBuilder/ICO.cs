@@ -19,8 +19,10 @@ namespace ICOBuilder
     public class ICOImage
     {
         public static readonly int BITMAPFILEHEADER_SIZE = 14;
+        public static readonly int BITMAPINFOHEADER_WIDTH = 4;
+        public static readonly int BITMAPINFOHEADER_HEIGHT = 8;
 
-        public Image Image { get; set; }
+        public Bitmap Image { get; set; }
         public string Path { get; set; }
         public ICOImageType Type { get; set; }
 
@@ -47,7 +49,11 @@ namespace ICOBuilder
         public ICOImage(string path)
         {
             this.Path = path;
-            this.Image = Image.FromFile(path);
+            Bitmap SourceImage = new Bitmap(System.Drawing.Image.FromFile(path));
+            this.Image = new Bitmap(SourceImage.Width, SourceImage.Height);
+            for (int y = 0; y < SourceImage.Height; y++)
+                for (int x = 0; x < SourceImage.Width; x++)
+                    this.Image.SetPixel(x, y, SourceImage.GetPixel(x, y));
             this.Type = ICOImageType.PNG;
             this.HotspotX = 0;
             this.HotspotY = 0;
@@ -72,7 +78,14 @@ namespace ICOBuilder
             serialized = stream.ToArray();
             // For BMP images, strip BITMAPFILEHEADER
             if (Type == ICOImageType.BMP)
+            {
                 serialized = Bytes.Subset(serialized, BITMAPFILEHEADER_SIZE, serialized.Length - BITMAPFILEHEADER_SIZE);
+                // BUG? We need to double the image height in BITMAPINFOHEADER
+                int height = Bytes.FromBytes(serialized, BITMAPINFOHEADER_HEIGHT, 4);
+                height *= 2;
+                byte[] heightBytes = Bytes.FromInt(height, 4);
+                Bytes.Replace(serialized, heightBytes, BITMAPINFOHEADER_HEIGHT);
+            }
         }
     }
     public class ICOFile
@@ -208,6 +221,11 @@ namespace ICOBuilder
             for (int i = 0; i < count; i++)
                 result[i] = bytes[start + i];
             return result;
+        }
+        public static void Replace(byte[] original, byte[] replacement, int offset)
+        {
+            for (int i = 0; i < replacement.Length; i++)
+                original[offset + i] = replacement[i];
         }
     }
 }
