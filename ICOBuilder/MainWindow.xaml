@@ -7,25 +7,63 @@
         mc:Ignorable="d"
         Title="ICOBuilder" Height="400" Width="400">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid x:Name="GridImageList" Grid.Column="0" Grid.Row="0">
-            <TreeView x:Name="TVImageList"></TreeView>
-        </Grid>
-        <Grid x:Name="GridImageView" Grid.Column="1" Grid.Row="0">
-            <Image x:Name="ImageView"></Image>
-        </Grid>
-        <Grid x:Name="GridImageOptions" Grid.Column="0" Grid.Row="1">
-
-        </Grid>
-        <Grid x:Name="GridICOOptions" Grid.Column="1" Grid.Row="1">
-            
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid x:Name="GridImageList" Grid.Column="0" Grid.Row="0">
+                <ListView x:Name="LVImageList"></ListView>
+            </Grid>
+            <Grid x:Name="GridImageView" Grid.Column="1" Grid.Row="0">
+                <Image x:Name="ImageView" HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+            </Grid>
+            <Grid x:Name="GridICOOptions" Grid.Column="0" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Button Content="Add Image" Grid.ColumnSpan="2" Margin="10"></Button>
+                <RadioButton x:Name="RBICO" Content="ICO" GroupName="ICOType" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"></RadioButton>
+                <RadioButton x:Name="RBCUR" Content="CUR" GroupName="ICOType" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"></RadioButton>
+                <Button Content="New" Grid.Column="0" Grid.Row="2" Margin="10"></Button>
+                <Button Content="Open" Grid.Column="1" Grid.Row="2" Margin="10"></Button>
+                <Button Content="Save" Grid.Column="0" Grid.Row="3" Margin="10"></Button>
+                <Button Content="Save As" Grid.Column="1" Grid.Row="3" Margin="10"></Button>
+            </Grid>
+            <Grid x:Name="GridImageOptions" Grid.Column="1" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="2*" />
+                    <RowDefinition Height="2*" />
+                </Grid.RowDefinitions>
+                <RadioButton x:Name="RBPNG" Content="PNG" GroupName="ImageType" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center"></RadioButton>
+                <RadioButton x:Name="RBBMP" Content="BMP" GroupName="ImageType" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center"></RadioButton>
+                <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" BorderThickness="5" BorderBrush="AliceBlue"></Border>
+                <Label Content="Height" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" Margin="10"></Label>
+                <TextBox x:Name="TBHeight" Grid.Column="0" Grid.Row="1" Height="24" Margin="10 30 10 10" AcceptsReturn="False"></TextBox>
+                <Label Content="Width" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" Margin="10"></Label>
+                <TextBox x:Name="TBWidth" Grid.Column="1" Grid.Row="1" Height="24" Margin="10 30 10 10" AcceptsReturn="False"></TextBox>
+                <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" BorderThickness="5" BorderBrush="AliceBlue"></Border>
+                <Label Content="Hotspot X" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center" Margin="10"></Label>
+                <TextBox x:Name="TBHotspotX" Grid.Column="0" Grid.Row="2" Height="24" Margin="10 30 10 10" AcceptsReturn="False"></TextBox>
+                <Label Content="Hotspot Y" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" Margin="10"></Label>
+                <TextBox x:Name="TBHotspotY" Grid.Column="1" Grid.Row="2" Height="24" Margin="10 30 10 10" AcceptsReturn="False"></TextBox>
+            </Grid>
         </Grid>
     </Grid>
 </Window>
