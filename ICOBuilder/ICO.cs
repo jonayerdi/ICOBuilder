@@ -23,7 +23,6 @@ namespace ICOBuilder
         public static readonly int BITMAPINFOHEADER_HEIGHT = 8;
 
         public Bitmap Image { get; set; }
-        public string Path { get; set; }
         public ICOImageType Type { get; set; }
 
         public int Width { get { return Image.Width; } }
@@ -46,10 +45,9 @@ namespace ICOBuilder
             }
         }
 
-        public ICOImage(string path)
+        public ICOImage(System.Drawing.Image img)
         {
-            this.Path = path;
-            Bitmap SourceImage = new Bitmap(System.Drawing.Image.FromFile(path));
+            Bitmap SourceImage = new Bitmap(img);
             this.Image = new Bitmap(SourceImage.Width, SourceImage.Height);
             for (int y = 0; y < SourceImage.Height; y++)
                 for (int x = 0; x < SourceImage.Width; x++)
@@ -57,6 +55,9 @@ namespace ICOBuilder
             this.Type = ICOImageType.PNG;
             this.HotspotX = 0;
             this.HotspotY = 0;
+        }
+        public ICOImage(string path) : this(System.Drawing.Image.FromFile(path))
+        {
         }
 
         public void Serialize()
@@ -95,6 +96,23 @@ namespace ICOBuilder
 
         public ICOType Type { get; set; }
         public List<ICOImage> Images { get; set; }
+
+        public ICOFile(ICOType type)
+        {
+            this.Type = type;
+            this.Images = new List<ICOImage>();
+        }
+
+        public ICOFile(byte[] data)
+        {
+            this.Images = new List<ICOImage>();
+            this.Deserialize(data);
+        }
+
+        private void Deserialize(byte[] data)
+        {
+
+        }
 
         private int OffsetOfImage(ICOImage img)
         {
