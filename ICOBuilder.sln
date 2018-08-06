@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICOBuilder", "ICOBuilder\ICOBuilder.csproj", "{DDA1F729-4FED-4D1A-982A-D0C0B841C9FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICO", "ICO\ICO.csproj", "{E94E4039-AA3A-4934-B810-5C26F7645710}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DDA1F729-4FED-4D1A-982A-D0C0B841C9FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDA1F729-4FED-4D1A-982A-D0C0B841C9FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDA1F729-4FED-4D1A-982A-D0C0B841C9FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E94E4039-AA3A-4934-B810-5C26F7645710}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E94E4039-AA3A-4934-B810-5C26F7645710}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E94E4039-AA3A-4934-B810-5C26F7645710}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E94E4039-AA3A-4934-B810-5C26F7645710}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
