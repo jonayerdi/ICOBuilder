@@ -12,11 +12,6 @@ namespace ICO
     }
     public class ICOImage
     {
-        public static readonly int BITMAPFILEHEADER_SIZE = 14;
-        public static readonly int BITMAPINFOHEADER_SIZE = 40;
-        public static readonly int BITMAPINFOHEADER_WIDTH = 4;
-        public static readonly int BITMAPINFOHEADER_HEIGHT = 8;
-
         private Bitmap image;
         public Bitmap Image
         {
@@ -61,22 +56,23 @@ namespace ICO
             this.HotspotX = 0;
             this.HotspotY = 0;
         }
-        public ICOImage(string path) : this(System.Drawing.Image.FromFile(path))
-        {
-        }
+        public ICOImage(string path) : this(System.Drawing.Image.FromFile(path)) { }
         public ICOImage(byte[] imageData)
         {
-            if(Bytes.FromBytes(imageData, 0, 2) == BITMAPINFOHEADER_SIZE)
-            {
-                //BMP image -> BITMAPFILEHEADER was stripped and must be generated
-                imageData = GenerateBITMAPFILEHEADER(imageData);
-            }
             MemoryStream stream = new MemoryStream(imageData);
             this.Image = new Bitmap(System.Drawing.Image.FromStream(stream));
             this.Type = ICOImageType.PNG;
             this.HotspotX = 0;
             this.HotspotY = 0;
         }
+
+        internal ICOImage(ICOType type, ICONDIRENTRY icondirentry, byte[] icoData)
+            : this(Bytes.Subset(icoData, icondirentry.Image.Offset, icondirentry.Image.Size))
+        {
+            this.HotspotX = icondirentry.Image.HotspotX;
+            this.HotspotY = icondirentry.Image.HotspotY;
+        }
+
         public void Serialize()
         {
             MemoryStream stream = new MemoryStream();
@@ -96,20 +92,7 @@ namespace ICO
             serialized = stream.ToArray();
             // For BMP images, strip BITMAPFILEHEADER
             if (Type == ICOImageType.BMP)
-            {
-                serialized = Bytes.Subset(serialized, BITMAPFILEHEADER_SIZE, serialized.Length - BITMAPFILEHEADER_SIZE);
-                // BUG? We need to double the image height in BITMAPINFOHEADER
-                int height = Bytes.FromBytes(serialized, BITMAPINFOHEADER_HEIGHT, 4);
-                height *= 2;
-                byte[] heightBytes = Bytes.FromInt(height, 4);
-                Bytes.Replace(serialized, heightBytes, BITMAPINFOHEADER_HEIGHT);
-            }
-        }
-        private byte[] GenerateBITMAPFILEHEADER(byte[] imageData)
-        {
-            byte[] BMPImage = new byte[BITMAPFILEHEADER_SIZE + imageData.Length];
-            //TODO
-            return BMPImage;
+                serialized = BITMAPFILEHEADER.StripBITMAPFILEHEADER(serialized);
         }
     }
 }
