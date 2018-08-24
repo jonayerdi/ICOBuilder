@@ -67,8 +67,19 @@ namespace ICO
         }
 
         internal ICOImage(ICOType type, ICONDIRENTRY icondirentry, byte[] icoData)
-            : this(Bytes.Subset(icoData, icondirentry.Image.Offset, icondirentry.Image.Size))
         {
+            byte[] imageData = Bytes.Subset(icoData, icondirentry.Image.Offset, icondirentry.Image.Size);
+            if(BITMAPFILEHEADER.isStrippedBMP(imageData))
+            {
+                imageData = BITMAPFILEHEADER.GenerateBITMAPFILEHEADER(icondirentry, imageData);
+                this.Type = ICOImageType.BMP;
+            }
+            else
+            {
+                this.Type = ICOImageType.PNG;
+            }
+            MemoryStream stream = new MemoryStream(imageData);
+            this.Image = new Bitmap(System.Drawing.Image.FromStream(stream));
             this.HotspotX = icondirentry.Image.HotspotX;
             this.HotspotY = icondirentry.Image.HotspotY;
         }

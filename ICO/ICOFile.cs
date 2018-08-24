@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ICO
 {
@@ -19,10 +20,21 @@ namespace ICO
             this.Type = type;
         }
 
-        public ICOFile(byte[] data)
+        public ICOFile(byte[] data, bool ignoreErrors)
         {
             this.Images = new List<ICOImage>();
-            this.Deserialize(data);
+            this.Deserialize(data, ignoreErrors);
+        }
+        public ICOFile(byte[] data) : this(data, true) { }
+        public static ICOFile ReadFromFile(string path, bool ignoreErrors)
+        {
+            return new ICOFile(File.ReadAllBytes(path), ignoreErrors);
+        }
+        public static ICOFile ReadFromFile(string path) { return ReadFromFile(path, true); }
+
+        public void WriteToFile(string path)
+        {
+            File.WriteAllBytes(path, this.Serialize());
         }
 
         private int OffsetOfImage(ICOImage image)
@@ -58,7 +70,7 @@ namespace ICO
             return ico.ToArray();
         }
 
-        private void Deserialize(byte[] data)
+        private void Deserialize(byte[] data, bool ignoreErrors)
         {
             // Deserialize headers
             ByteStream stream = new ByteStream(data);
@@ -69,7 +81,15 @@ namespace ICO
             this.Type = icondir.Type;
             // Deserialize images
             foreach (ICONDIRENTRY icondirentry in icondirentries)
-                this.Images.Add(new ICOImage(this.Type, icondirentry, data));
+            {
+                try
+                {
+                    this.Images.Add(new ICOImage(this.Type, icondirentry, data));
+                } catch(Exception e)
+                {
+                    if (!ignoreErrors) throw e;
+                }
+            }
         }
     }
 }
