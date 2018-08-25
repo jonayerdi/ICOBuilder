@@ -43,7 +43,7 @@
   <ItemGroup>
     <Compile Include="ICOFile.cs" />
     <Compile Include="ICOImage.cs" />
-    <Compile Include="internals\BITMAPFILEHEADER.cs" />
+    <Compile Include="internals\BMP.cs" />
     <Compile Include="internals\ICONDIR.cs" />
     <Compile Include="internals\ICONDIRENTRY.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

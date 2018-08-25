@@ -7,12 +7,20 @@ namespace ICOTool
     {
         static void Main(string[] args)
         {
-            if(args.Length == 1)
-            {
-                ICOFile ico = ICOFile.ReadFromFile(args[0]);
-                foreach (ICOImage img in ico.Images)
-                    Console.WriteLine(string.Format("{0}: {1}x{2}", Enum.GetName(typeof(ICOImageType), img.Type), img.Width, img.Height));
-            }
+            DumpInfo("samples/rw.ico");
+        }
+        static void DumpInfo(string path)
+        {
+            ICOFile ico = ICOFile.ReadFromFile(path, false);
+            foreach (ICOImage img in ico.Images)
+                Console.WriteLine(string.Format("{0}: {1}x{2}", Enum.GetName(typeof(ICOImageType), img.Type), img.Width, img.Height));
+        }
+        static void CreateFromImage(string imagePath, string outputPath, ICOImageType imageType)
+        {
+            ICOFile ico = new ICOFile(ICOType.ICO);
+            ico.Images.Add(ICOImage.ReadFromFile(imagePath));
+            ico.Images[0].Type = imageType;
+            ico.WriteToFile(outputPath);
         }
     }
 }

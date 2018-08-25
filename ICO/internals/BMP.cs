@@ -1,14 +1,14 @@
 ﻿
 namespace ICO
 {
-    internal static class BITMAPFILEHEADER
+    internal static class BMP
     {
         public static readonly int BITMAPFILEHEADER_SIGNATURE = 0x4D42;
         public static readonly int BITMAPFILEHEADER_SIZE = 14;
         public static readonly int BITMAPINFOHEADER_SIZE = 40;
-        public static readonly int BITMAPINFOHEADER_WIDTH = 4;
-        public static readonly int BITMAPINFOHEADER_HEIGHT = 8;
-        public static readonly int BITMAPINFOHEADER_BITSPERPIXEL = 14;
+        public static readonly int BITMAPINFOHEADER_WIDTH_OFFSET = 4;
+        public static readonly int BITMAPINFOHEADER_HEIGHT_OFFSET = 8;
+        public static readonly int BITMAPINFOHEADER_BITSPERPIXEL_OFFSET = 14;
 
         public static bool isStrippedBMP(byte[] imageData)
         {
@@ -42,13 +42,13 @@ namespace ICO
              (before they are composited). Therefore, the masks must each be of the same dimensions, and the height 
              specified in the BMP header must be exactly twice the height specified in the ICONDIRENTRY structure.
              */
-            int bpp = Bytes.FromBytes(result, BITMAPINFOHEADER_BITSPERPIXEL, 2);
-            if(bpp < 32)
+            int bpp = Bytes.FromBytes(result, BITMAPINFOHEADER_BITSPERPIXEL_OFFSET, 2);
+            if(true) // if(bpp < 32)
             {
-                int height = Bytes.FromBytes(result, BITMAPINFOHEADER_HEIGHT, 4);
+                int height = Bytes.FromBytes(result, BITMAPINFOHEADER_HEIGHT_OFFSET, 4);
                 height *= 2;
                 byte[] heightBytes = Bytes.FromInt(height, 4);
-                Bytes.Replace(result, heightBytes, BITMAPINFOHEADER_HEIGHT);
+                Bytes.Replace(result, heightBytes, BITMAPINFOHEADER_HEIGHT_OFFSET);
                 // TODO: Generate AND mask inside the bitmap data
             }
             return result;
@@ -71,16 +71,21 @@ namespace ICO
             // Copy BMPData
             Bytes.Replace(result, BMPData, BITMAPFILEHEADER_SIZE);
             // Fix BITMAPINFOHEADER height
-            int bpp = Bytes.FromBytes(result, BITMAPFILEHEADER_SIZE + BITMAPINFOHEADER_BITSPERPIXEL, 2);
-            if (bpp < 32)
+            int bpp = Bytes.FromBytes(result, BITMAPFILEHEADER_SIZE + BITMAPINFOHEADER_BITSPERPIXEL_OFFSET, 2);
+            if (true) // if(bpp < 32)
             {
-                int height = Bytes.FromBytes(result, BITMAPFILEHEADER_SIZE + BITMAPINFOHEADER_HEIGHT, 4);
+                int height = Bytes.FromBytes(result, BITMAPFILEHEADER_SIZE + BITMAPINFOHEADER_HEIGHT_OFFSET, 4);
                 height /= 2;
                 byte[] heightBytes = Bytes.FromInt(height, 4);
-                Bytes.Replace(result, heightBytes, BITMAPFILEHEADER_SIZE + BITMAPINFOHEADER_HEIGHT);
+                Bytes.Replace(result, heightBytes, BITMAPFILEHEADER_SIZE + BITMAPINFOHEADER_HEIGHT_OFFSET);
                 // TODO: Strip AND mask inside the bitmap data?
             }
             return result;
+        }
+
+        public static int GetBitsPerPixel(byte[] BMPData)
+        {
+            return Bytes.FromBytes(BMPData, BITMAPINFOHEADER_BITSPERPIXEL_OFFSET, 2); ;
         }
     }
 }

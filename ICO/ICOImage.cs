@@ -33,8 +33,14 @@ namespace ICO
         public int Height { get { return Image.Height; } }
         public Size Size { get { return Image.Size; } set { Image = new Bitmap(Image, value); } }
 
-        // Do we need this?
-        public int BitsPerPixel { get { return 0; } }
+        internal int BitsPerPixel
+        { get
+            {
+                if (this.Type == ICOImageType.BMP)
+                    return BMP.GetBitsPerPixel(this.serialized);
+                return 0;
+            }
+        }
 
         // These two are only for CUR files
         public int HotspotX { get; set; }
@@ -65,13 +71,17 @@ namespace ICO
             this.HotspotX = 0;
             this.HotspotY = 0;
         }
+        public static ICOImage ReadFromFile(string path)
+        {
+            return new ICOImage(path);
+        }
 
         internal ICOImage(ICOType type, ICONDIRENTRY icondirentry, byte[] icoData)
         {
             byte[] imageData = Bytes.Subset(icoData, icondirentry.Image.Offset, icondirentry.Image.Size);
-            if(BITMAPFILEHEADER.isStrippedBMP(imageData))
+            if(BMP.isStrippedBMP(imageData))
             {
-                imageData = BITMAPFILEHEADER.GenerateBITMAPFILEHEADER(icondirentry, imageData);
+                imageData = BMP.GenerateBITMAPFILEHEADER(icondirentry, imageData);
                 this.Type = ICOImageType.BMP;
             }
             else
@@ -88,7 +98,7 @@ namespace ICO
         {
             MemoryStream stream = new MemoryStream();
             ImageFormat format = null;
-            switch (Type)
+            switch (this.Type)
             {
                 case ICOImageType.BMP:
                     format = ImageFormat.Bmp;
@@ -103,7 +113,7 @@ namespace ICO
             serialized = stream.ToArray();
             // For BMP images, strip BITMAPFILEHEADER
             if (Type == ICOImageType.BMP)
-                serialized = BITMAPFILEHEADER.StripBITMAPFILEHEADER(serialized);
+                serialized = BMP.StripBITMAPFILEHEADER(serialized);
         }
     }
 }
