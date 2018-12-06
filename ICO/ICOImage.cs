@@ -81,7 +81,7 @@ namespace ICO
             byte[] imageData = Bytes.Subset(icoData, icondirentry.Image.Offset, icondirentry.Image.Size);
             if(BMP.isStrippedBMP(imageData))
             {
-                imageData = BMP.GenerateBITMAPFILEHEADER(icondirentry, imageData);
+                imageData = BMP.FromICO(icondirentry, imageData);
                 this.Type = ICOImageType.BMP;
             }
             else
@@ -111,9 +111,15 @@ namespace ICO
             }
             Image.Save(stream, format);
             serialized = stream.ToArray();
-            // For BMP images, strip BITMAPFILEHEADER
+            // For BMP images, strip BITMAPFILEHEADER + add AND mask
             if (Type == ICOImageType.BMP)
-                serialized = BMP.StripBITMAPFILEHEADER(serialized);
+            {
+                // Generate AND mask: false for transparent, true for opaque
+                bool[] ANDmask = new bool[this.Height * this.Width];
+                for (int i = 0; i < ANDmask.Length; i++)
+                    ANDmask[i] = ((this.Image.GetPixel(i % this.Width, i / this.Width).A == 0) ? false : true);
+                serialized = BMP.ToICO(serialized, ANDmask);
+            }
         }
     }
 }

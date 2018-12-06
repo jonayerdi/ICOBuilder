@@ -7,7 +7,8 @@ namespace ICOTool
     {
         static void Main(string[] args)
         {
-            DumpInfo("samples/rw.ico");
+            //DumpInfo("samples/invader.ico");
+            CreateFromImage("samples/invader.png", "samples/invader.ico", ICOImageType.BMP);
         }
         static void DumpInfo(string path)
         {

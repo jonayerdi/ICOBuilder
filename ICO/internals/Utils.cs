@@ -24,6 +24,15 @@ namespace ICO
                 result[i] = bytes[start + i];
             return result;
         }
+        public static byte[] Merge(byte[] first, byte[] second)
+        {
+            byte[] result = new byte[first.Length + second.Length];
+            for (int i = 0; i < first.Length; i++)
+                result[i] = first[i];
+            for (int i = 0; i < second.Length; i++)
+                result[first.Length + i] = second[i];
+            return result;
+        }
         public static void Replace(byte[] original, byte[] replacement, int offset)
         {
             for (int i = 0; i < replacement.Length; i++)
