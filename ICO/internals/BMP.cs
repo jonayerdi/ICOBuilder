@@ -1,4 +1,7 @@
-﻿namespace ICO
+﻿using System;
+using System.Drawing;
+
+namespace ICO
 {
     internal static class BMP
     {
@@ -8,6 +11,67 @@
         public static readonly int BITMAPINFOHEADER_WIDTH_OFFSET = 4;
         public static readonly int BITMAPINFOHEADER_HEIGHT_OFFSET = 8;
         public static readonly int BITMAPINFOHEADER_BITSPERPIXEL_OFFSET = 14;
+
+        private static int GetRowAlignmentBytes(int width, int bpp)
+        {
+            int bytesPerPixel = bpp / 8;
+            int baseRowSize = width * bytesPerPixel;
+            int alignmentBytes = baseRowSize % 4;
+            return alignmentBytes == 0 ? 0 : 4 - alignmentBytes;
+        }
+
+        private static int GetRowSize(int width, int bpp)
+        {
+            if (bpp < 8 || bpp % 8 != 0) throw new FormatException(string.Format("Invalid BMP bpp: {0}", bpp));
+            if (width < 0) throw new FormatException(string.Format("Invalid BMP width: {0}", width));
+            return width * bpp / 8 + BMP.GetRowAlignmentBytes(width, bpp);
+        }
+
+        public static int GetSize(int width, int height, int bpp)
+        {
+            if (height < 0) throw new FormatException(string.Format("Invalid BMP height: {0}", height));
+            return BITMAPFILEHEADER_SIZE + BITMAPINFOHEADER_SIZE + height * GetRowSize(width, bpp);
+        }
+
+        public static byte[] Get24bppBMP(Bitmap image)
+        {
+            int bpp = 24;
+            int headersSize = BITMAPFILEHEADER_SIZE + BITMAPINFOHEADER_SIZE;
+            int fileSize = BMP.GetSize(image.Width, image.Height, bpp);
+            ByteStream stream = new ByteStream(fileSize);
+            // BMP file header
+            stream.Write16(0x4D42);
+            stream.Write32(fileSize);
+            stream.Write16(0);
+            stream.Write16(0);
+            stream.Write32(headersSize);
+            // BMP info header
+            stream.Write32(BITMAPINFOHEADER_SIZE);
+            stream.Write32(image.Width);
+            stream.Write32(image.Height);
+            stream.Write16(1);
+            stream.Write16(bpp);
+            stream.Write32(0);
+            stream.Write32(fileSize - headersSize);
+            stream.Write32(0);
+            stream.Write32(0);
+            stream.Write32(0);
+            stream.Write32(0);
+            // BMP image data
+            int alignmentBytes = BMP.GetRowAlignmentBytes(image.Width, bpp);
+            byte[] rowAlignment = new byte[alignmentBytes];
+            for (int y = image.Height - 1; y >= 0; y--)
+            {
+                for (int x = 0; x < image.Width; x++)
+                {
+                    Color color = image.GetPixel(x,y);
+                    byte[] pixel = { color.R, color.G, color.B };
+                    stream.Write(pixel);
+                }
+                stream.Write(rowAlignment);
+            }
+            return stream.Buffer;
+        }
 
         public static bool isStrippedBMP(byte[] imageData)
         {
@@ -48,20 +112,21 @@
              */
             int bpp = BMP.GetBitsPerPixel(result);
             int height = Bytes.FromBytes(result, BITMAPINFOHEADER_HEIGHT_OFFSET, 4);
-            height *= 2;
-            byte[] heightBytes = Bytes.FromInt(height, 4);
+            byte[] heightBytes = Bytes.FromInt(height * 2, 4);
             Bytes.Replace(result, heightBytes, BITMAPINFOHEADER_HEIGHT_OFFSET);
             if (bpp < 32)
             {
                 // Create and append AND mask after the bitmap data
-                // TODO: 32 bit row alignment
+                /*
                 int width = Bytes.FromBytes(result, BITMAPINFOHEADER_WIDTH_OFFSET, 4);
                 int BytesPerPixel = bpp / 8;
-                byte[] ANDbytes = new byte[ANDmask.Length * BytesPerPixel];
+                int RowAlignment = BMP.GetRowAlignmentBytes(width, bpp);
+                byte[] ANDbytes = new byte[ANDmask.Length * BytesPerPixel + height * RowAlignment];
                 for (int i = 0; i < ANDmask.Length; i++)
                     for (int j = 0; j < BytesPerPixel; j++)
                         ANDbytes[i * BytesPerPixel + j] = ANDmask[i] ? (byte)0xFF : (byte)0x00;
                 result = Bytes.Merge(result, ANDbytes);
+                */
             }
             return result;
         }

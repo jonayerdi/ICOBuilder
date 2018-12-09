@@ -1,5 +1,8 @@
-﻿using ICO;
-using System;
+﻿using System;
+using System.IO;
+using System.Drawing.Imaging;
+
+using ICO;
 
 namespace ICOTool
 {
@@ -8,7 +11,8 @@ namespace ICOTool
         static void Main(string[] args)
         {
             //DumpInfo("samples/invader.ico");
-            CreateFromImage("samples/invader.png", "samples/invader.ico", ICOImageType.BMP);
+            //CreateFromImage("samples/invader.png", "samples/invader.ico", ICOImageType.BMP);
+            //ExportFromICO("samples/clock.ico", "samples/clock");
         }
         static void DumpInfo(string path)
         {
@@ -22,6 +26,18 @@ namespace ICOTool
             ico.Images.Add(ICOImage.ReadFromFile(imagePath));
             ico.Images[0].Type = imageType;
             ico.WriteToFile(outputPath);
+        }
+        static void ExportFromICO(string ICOPath, string outpath)
+        {
+            DirectoryInfo di = new DirectoryInfo(outpath);
+            if (!di.Exists)
+                di.Create();
+            ICOFile ico = ICOFile.ReadFromFile(ICOPath, false);
+            for (int i = 0; i < ico.Images.Count; i++)
+            {
+                ICOImage img = ico.Images[i];
+                img.Image.Save(Path.Combine(di.FullName, string.Format("Image{0}.png", i)), ImageFormat.Png);
+            }
         }
     }
 }

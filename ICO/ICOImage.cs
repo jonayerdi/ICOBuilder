@@ -109,7 +109,7 @@ namespace ICO
                 default:
                     throw new FormatException("Invalid image format type");
             }
-            Image.Save(stream, format);
+            this.Image.Save(stream, format);
             serialized = stream.ToArray();
             // For BMP images, strip BITMAPFILEHEADER + add AND mask
             if (Type == ICOImageType.BMP)
